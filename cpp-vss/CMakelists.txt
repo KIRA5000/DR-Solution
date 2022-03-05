@@ -1,0 +1,47 @@
+cmake_minimum_required(VERSION 3.15)
+
+project(cpp-vss)
+
+add_definitions(-D_UNICODE -DVSS_SERVER)
+
+SET(
+  SOURCES
+  src/break.cpp
+  src/create.cpp
+  src/delete.cpp
+  src/expose.cpp
+  src/query.cpp
+  src/revert.cpp
+  src/select.cpp
+  src/shadow.cpp
+  src/stdafx.cpp
+  src/tracing.cpp
+  src/vssclient.cpp
+  src/writer.cpp
+)
+
+add_library(libvss STATIC ${SOURCES})
+
+add_executable(TestVSS TestVSS.cpp)
+
+SET_PROPERTY(TARGET libvss PROPERTY CXX_STANDARD 17)
+SET_PROPERTY(TARGET TestVSS PROPERTY CXX_STANDARD 17)
+
+if (WIN32)
+  SET (CMAKE_CXX_FLAGS_RELEASE "/Zi /Od")
+  SET_TARGET_PROPERTIES(libvss PROPERTIES LINK_FLAGS "/DEBUG /OPT:REF /OPT:ICF")
+endif (WIN32)
+
+if (WIN32)
+  SET (CMAKE_CXX_FLAGS_RELEASE "/Zi /Od")
+  SET_TARGET_PROPERTIES(TestVSS PROPERTIES LINK_FLAGS "/DEBUG /OPT:REF /OPT:ICF")
+endif (WIN32)
+
+target_include_directories(
+  TestVSS
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+target_link_libraries(TestVSS libvss vssapi.lib resutils.Lib)
